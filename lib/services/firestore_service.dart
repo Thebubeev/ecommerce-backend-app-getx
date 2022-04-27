@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ecommerce_backend_getx/models/order_model.dart';
 import 'package:flutter_ecommerce_backend_getx/models/product_model.dart';
+import 'package:get/get_rx/src/rx_types/rx_types.dart';
 
 class FirestoreService {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
@@ -15,14 +16,17 @@ class FirestoreService {
   }
 
   Stream<List<Order>> getAllOrders() {
-    return _firebaseFirestore.collection('orders').snapshots().map((snapshot) {
+    return _firebaseFirestore
+        .collection('checkout')
+        .snapshots()
+        .map((snapshot) {
       return snapshot.docs.map((doc) => Order.fromSnapshot(doc)).toList();
     });
   }
 
   Stream<List<Order>> getPendingOrders() {
     return _firebaseFirestore
-        .collection('orders')
+        .collection('checkout')
         .where('isDelivered', isEqualTo: false)
         .where('isCancelled', isEqualTo: false)
         .snapshots()
@@ -50,7 +54,7 @@ class FirestoreService {
 
   Future<void> updateStatus(Order order, String field, dynamic newValue) {
     return _firebaseFirestore
-        .collection('orders')
+        .collection('checkout')
         .where('id', isEqualTo: order.id)
         .get()
         .then((snapshots) =>

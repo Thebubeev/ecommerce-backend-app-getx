@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ecommerce_backend_getx/controllers/orders_controller.dart';
-import 'package:flutter_ecommerce_backend_getx/controllers/product_controller.dart';
 import 'package:flutter_ecommerce_backend_getx/models/order_model.dart';
 import 'package:flutter_ecommerce_backend_getx/models/product_model.dart';
-import 'package:flutter_ecommerce_backend_getx/screens/new_product_screen.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:intl/intl.dart';
 
@@ -56,24 +53,27 @@ class OrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var products = Product.products
-        .where((product) => order.productsId.contains(product.id))
-        .toList();
+    // var products = Product.products
+    //    .where((product) => order.productsId.contains(product.id))
+    //   .toList();
     return Card(
       elevation: 5,
       margin: const EdgeInsets.only(top: 10),
       child: Column(
         children: [
+          const SizedBox(
+            height: 10,
+          ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Text(
-                'Order id: ${order.id}',
+                'Date: ${DateFormat('EEEE, M/d/y').format(order.orderedAt!)}',
                 style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
               Text(
-                'Date: ${DateFormat('EEEE, M/d/y').format(order.createdAt)}',
+                'Id: ${order.id}',
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
               ),
@@ -89,26 +89,28 @@ class OrderCard extends StatelessWidget {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Image.network(
-                      products[index].imageUrl!,
-                      fit: BoxFit.cover,
-                      height: 80,
-                      width: 80,
-                    ),
-                    const SizedBox(
-                      width: 10,
+                    Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(5),
+                          child: Image.network(
+                            order.images![index] ??
+                                'https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482953.jpg',
+                            fit: BoxFit.cover,
+                            height: 80,
+                            width: 70,
+                          ),
+                        )
+                      ],
                     ),
                     Column(
                       children: [
                         Text(
-                          products[index].name,
+                          order.products![index] + ' #${index + 1}',
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 20),
-                        ),
-                        Text(
-                          products[index].description,
-                          style: const TextStyle(fontSize: 18),
                         ),
                       ],
                     ),
@@ -116,7 +118,7 @@ class OrderCard extends StatelessWidget {
                 ),
               );
             },
-            itemCount: products.length,
+            itemCount: order.products!.length,
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 10),
@@ -134,14 +136,14 @@ class OrderCard extends StatelessWidget {
                       '${order.deliveryFee}',
                       style: const TextStyle(fontSize: 18),
                     ),
-                    order.isAccepted
+                    order.isAccepted!
                         ? ElevatedButton(
                             style:
                                 ElevatedButton.styleFrom(primary: Colors.black),
                             child: const Text('Deliver'),
                             onPressed: () {
                               orderController.updateStatus(
-                                  order, 'isDelivered', !order.isDelivered);
+                                  order, 'isDelivered', !order.isDelivered!);
                             },
                           )
                         : ElevatedButton(
@@ -150,7 +152,7 @@ class OrderCard extends StatelessWidget {
                             child: const Text('Accept'),
                             onPressed: () {
                               orderController.updateStatus(
-                                  order, 'isAccepted', !order.isAccepted);
+                                  order, 'isAccepted', !order.isAccepted!);
                             },
                           )
                   ],
@@ -171,7 +173,7 @@ class OrderCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(primary: Colors.red),
                       onPressed: () {
                         orderController.updateStatus(
-                            order, 'isCancelled', !order.isCancelled);
+                            order, 'isCancelled', !order.isCancelled!);
                       },
                     )
                   ],

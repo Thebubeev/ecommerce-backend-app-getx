@@ -1,136 +1,132 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_ecommerce_backend_getx/models/product_model.dart';
 
 class Order extends Equatable {
-  final int id;
-  final int customerId;
-  final List<int> productsId;
-  final double deliveryFee;
-  final double subtotal;
-  final double total;
-  final bool isAccepted;
-  final bool isCancelled;
-  final bool isDelivered;
-  final DateTime createdAt;
+  final String? id;
+  final List<dynamic>? images;
+  final String? customerName;
+  final String? customerEmail;
+  final Map<String, dynamic>? customerAddress;
+  final String? city;
+  final String? country;
+  final String? zipCode;
+  final List<dynamic>? products;
+  final String? subtotal;
+  final String? deliveryFee;
+  final String? total;
+  final bool? isAccepted;
+  final bool? isDelivered;
+  final bool? isCancelled;
+  final DateTime? orderedAt;
 
   const Order(
-      {required this.id,
-      required this.customerId,
-      required this.productsId,
+      {required this.id, required this.images,
+      required this.customerName,
+      required this.customerEmail,
+      required this.customerAddress,
+      this.city,
+      this.country,
+      this.zipCode,
+      required this.products,
       required this.deliveryFee,
       required this.subtotal,
       required this.total,
       required this.isAccepted,
       required this.isCancelled,
       required this.isDelivered,
-      required this.createdAt});
+      required this.orderedAt});
   @override
   List<Object?> get props => [
-        id,
-        customerId,
-        productsId,
-        deliveryFee,
+    id,
+        images,
+        customerName,
+        customerEmail,
+        customerAddress,
+        products,
         subtotal,
+        deliveryFee,
         total,
         isAccepted,
-        isCancelled,
         isDelivered,
-        createdAt
+        isCancelled,
+        orderedAt
       ];
 
   Order copyWith(
-    int? id,
-    int? customerId,
-    List<int>? productsId,
-    double? deliveryFee,
-    double? subtotal,
-    double? total,
+    String? id,
+    List<dynamic>? images,
+    String? customerName,
+    String? customerEmail,
+    Map<String, dynamic>? customerAddress,
+    List<dynamic>? products,
+    String? deliveryFee,
+    String? subtotal,
+    String? total,
     bool? isAccepted,
     bool? isCancelled,
     bool? isDelivered,
-    DateTime? createdAt,
+    DateTime? orderedAt,
   ) {
     return Order(
-        id: id ?? this.id,
-        customerId: customerId ?? this.customerId,
-        productsId: productsId ?? this.productsId,
+      id: id ?? this.id,
+      images: images ?? this.images,
+        customerName: customerName ?? this.customerName,
+        customerEmail: customerEmail ?? this.customerEmail,
+        customerAddress: customerAddress ?? this.customerAddress,
+        products: products ?? this.products,
         deliveryFee: deliveryFee ?? this.deliveryFee,
         subtotal: subtotal ?? this.subtotal,
         total: total ?? this.total,
         isAccepted: isAccepted ?? this.isAccepted,
         isCancelled: isCancelled ?? this.isCancelled,
         isDelivered: isDelivered ?? this.isDelivered,
-        createdAt: createdAt ?? this.createdAt);
+        orderedAt: orderedAt ?? this.orderedAt);
   }
 
   Map<String, dynamic> toMap() {
+    Map customerAddress = Map();
+    customerAddress['address'] = customerAddress;
+    customerAddress['city'] = city;
+    customerAddress['country'] = country;
+    customerAddress['zipCode'] = zipCode;
     return {
-      'id': id,
-      'customerId': customerId,
-      'productsId': productsId,
+    'id' : id,
+    'images' : images,
+      'customerAddress': customerAddress,
+      'customerName': customerName!,
+      'customerEmail': customerEmail!,
+      'products': products!.map((product) => product.name).toList(),
       'deliveryFee': deliveryFee,
       'subtotal': subtotal,
       'total': total,
       'isAccepted': isAccepted,
       'isCancelled': isCancelled,
       'isDelivered': isDelivered,
-      'createdAt': createdAt,
+      'orderedAt': orderedAt
     };
   }
 
   factory Order.fromSnapshot(DocumentSnapshot snapshot) {
     return Order(
-        id: snapshot['id'],
-        customerId: snapshot['customerId'],
-        productsId: List<int>.from(snapshot['productsId']),
-        deliveryFee: snapshot['deliveryFee'].toDouble(),
-        subtotal: snapshot['subtotal'].toDouble(),
-        total: snapshot['total'].toDouble(),
+      id: snapshot['id'],
+      images: snapshot['images'],
+        customerName: snapshot['customerName'],
+        customerEmail: snapshot['customerEmail'],
+        customerAddress: Map<String, dynamic>.from(snapshot['customerAddress']),
+        products: List<dynamic>.from(snapshot['products']),
+        deliveryFee: snapshot['deliveryFee'],
+        subtotal: snapshot['subtotal'],
+        total: snapshot['total'],
         isAccepted: snapshot['isAccepted'],
         isCancelled: snapshot['isCancelled'],
         isDelivered: snapshot['isDelivered'],
-        createdAt: snapshot['createdAt'].toDate());
+        orderedAt: snapshot['orderedAt'].toDate());
   }
 
   String toJson() => json.encode(toMap());
 
   @override
   bool get stringify => true;
-
-  /* static List<Order> orders = [
-    Order(
-        id: 1,
-        customerId: 234,
-        productsId: const [1, 2, 3],
-        deliveryFee: 10,
-        subtotal: 20,
-        total: 30,
-        isAccepted: true,
-        isCancelled: false,
-        isDelivered: false,
-        createdAt: DateTime.now()),
-    Order(
-        id: 2,
-        customerId: 432,
-        productsId: const [1, 2],
-        deliveryFee: 10,
-        subtotal: 20,
-        total: 30,
-        isAccepted: true,
-        isCancelled: false,
-        isDelivered: false,
-        createdAt: DateTime.now()),
-    Order(
-        id: 3,
-        customerId: 11,
-        productsId: const [1, 2],
-        deliveryFee: 10,
-        subtotal: 20,
-        total: 30,
-        isAccepted: true,
-        isCancelled: false,
-        isDelivered: false,
-        createdAt: DateTime.now()),
-  ];*/
 }
